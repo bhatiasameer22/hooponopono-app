@@ -148,7 +148,7 @@ onbname:()=>`<section class="onb" style="background:var(--cream)"><img class="le
    <input id="onbnm" class="nameinput" maxlength="30" autocomplete="given-name" placeholder="Your first name" aria-label="Your first name" value="${esc(S.name)}" style="min-height:56px;font-size:1.15rem;text-align:center;background:var(--ivory)">
    <div><p class="small muted center" style="margin-bottom:8px">Language</p><div class="seg3" style="grid-template-columns:1fr 1fr" data-notr><button data-a="setlang" data-v="en" aria-pressed="${S.lang==='en'}">English</button><button data-a="setlang" data-v="hi" aria-pressed="${S.lang==='hi'}">हिन्दी</button></div></div>
   </div>
-  <div class="stack" style="position:relative;margin-top:auto;padding:24px 24px calc(28px + env(safe-area-inset-bottom,0px));gap:8px">${C.PrimaryButton('Continue','onbnamego','1')}<button class="link center" data-a="onbnamego" data-v="">Skip for now</button></div></section>`,
+  <div class="stack" style="position:relative;margin-top:auto;padding:24px 24px calc(28px + env(safe-area-inset-bottom,0px));gap:8px">${C.PrimaryButton('Continue','onbnamego','1')}</div></section>`,
 
 home:()=>{const q=QUOTES[(new Date().getDate())%QUOTES.length];const done=(S.practice[dk()]||[]).length;
  return `<div style="padding-top:calc(22px + env(safe-area-inset-top,0px))" class="row between">
