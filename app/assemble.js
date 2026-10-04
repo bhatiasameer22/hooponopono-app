@@ -13,7 +13,7 @@ const parts = [
   read('scripts_src.js'),
   read('p4.js'), read('p5.js'),
   'AFTER.affirmations=AFTER.morning;',
-  read('p6.js'), read('p7.js'), read('p8.js'), read('p9.js'), read('p10.js'), read('p11.js')
+  read('p6.js'), read('p7.js'), read('p8.js'), read('p9.js'), read('p10.js'), read('p11.js'), read('p12.js')
 ];
 
 const body = read('p2.js') + '\n' + p3.slice(0, boot) + parts.join('\n') + '\nS.voiceOn=false;\n';

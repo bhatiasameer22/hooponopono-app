@@ -236,3 +236,47 @@ run('java', ['-jar', jar('apksigner.jar'), 'sign',
 const verify = run('java', ['-jar', jar('apksigner.jar'), 'verify', '--verbose', apkOut]);
 console.log(verify.split('\n')[0]);
 console.log('Built', apkOut, fs.statSync(apkOut).size, 'bytes');
+
+/* ===== AAB BUILD (for Play Store) ===== */
+const bundletoolJar = jar('bundletool.jar');
+if (!fs.existsSync(bundletoolJar)) {
+  console.log('\nSkipping AAB: tools/bundletool.jar not found.');
+  console.log('Download from https://github.com/google/bundletool/releases and place in tools/');
+} else {
+  console.log('\n9. Building AAB (proto-format resources)...');
+  // Compile resources in proto format (required for AAB)
+  run(aapt2, ['link', '--proto-format', '-o', path.join(B, 'base_proto.apk'),
+    '-I', jar('android.jar'), '--manifest', mfPath,
+    '-A', path.join(AND, 'assets'), '--java', path.join(B, 'gen'),
+    '--auto-add-overlay', '-0', 'ogg', '-0', 'webp',
+    '--min-sdk-version', '24', '--target-sdk-version', '34', path.join(B, 'res.zip')]);
+
+  // Extract proto APK and restructure into base module zip
+  const protoApk = readZip(fs.readFileSync(path.join(B, 'base_proto.apk')));
+  const mod = [];
+  for (const e of protoApk) {
+    if (e.fn === 'AndroidManifest.xml') mod.push({...e, fn:'manifest/AndroidManifest.xml'});
+    else if (e.fn === 'resources.pb')    mod.push(e);
+    else if (e.fn.startsWith('res/'))    mod.push(e);
+    else if (e.fn.startsWith('assets/')) mod.push(e);
+  }
+  // Add dex
+  mod.push({fn:'dex/classes.dex', method:ZIP_DEFLATED, crc:crc32(dexRaw),
+            compSz:dexComp.length, uncompSz:dexRaw.length, extAttr:0, data:dexComp});
+
+  const baseZipPath = path.join(B, 'base.zip');
+  fs.writeFileSync(baseZipPath, writeAlignedApk(mod));
+
+  console.log('10. Bundling AAB...');
+  const aabUnsigned = path.join(B, 'unsigned.aab');
+  run('java', ['-jar', bundletoolJar, 'build-bundle',
+    '--modules', baseZipPath, '--output', aabUnsigned]);
+
+  console.log('11. Signing AAB...');
+  const aabOut = path.join(DIST, `Hooponopono-v${name}.aab`);
+  // AABs use jarsigner (v1), not apksigner
+  run('jarsigner', ['-keystore', path.join(AND, 'hooponopono-release.jks'),
+    '-storepass', pw, '-keypass', pw,
+    '-signedjar', aabOut, aabUnsigned, 'hooponopono']);
+  console.log('Built', aabOut, fs.statSync(aabOut).size, 'bytes');
+}
