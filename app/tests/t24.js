@@ -1,0 +1,13 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({args:['--autoplay-policy=no-user-gesture-required']});const p=await b.newPage({viewport:{width:390,height:844}});p.setDefaultTimeout(5000);
+const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
+await p.addInitScript(()=>localStorage.setItem('hoo.app.v2',JSON.stringify({onboarded:true,name:'Sameer',nameSet:true})));
+await p.goto('file://'+process.cwd()+'/app.html',{waitUntil:'domcontentloaded'});const r=[];
+await p.evaluate(()=>window.scrollTo(0,500));await p.waitForTimeout(800);await p.screenshot({path:'shots/q_home.png'});
+await p.click('[data-a="med"][data-v="mantra21"] >> nth=-1');await p.waitForTimeout(2000);
+const st=await p.evaluate(()=>{const a=document.querySelector('#mantraAudio');return{paused:a.paused,dur:Math.round(a.duration),src:a.src.split('/').pop()}});
+r.push(['mantra plays ('+JSON.stringify(st)+')',!st.paused&&st.dur===318]);r.push(['round 1 of 21',(await p.textContent('#looplbl'))==='Round 1 of 21']);
+await p.evaluate(()=>{document.querySelector('#mantraAudio').currentTime=100});await p.waitForTimeout(800);r.push(['round counter follows ('+await p.textContent('#looplbl')+')',(await p.textContent('#looplbl'))==='Round 7 of 21']);
+await p.screenshot({path:'shots/q_player.png'});
+await p.evaluate(()=>{const a=document.querySelector('#mantraAudio');a.currentTime=a.duration-1});await p.waitForTimeout(2500);r.push(['stops after 21',await p.evaluate(()=>document.querySelector('#mantraAudio').paused)]);
+console.log(r.map(x=>(x[1]?'PASS ':'FAIL ')+x[0]).join('\n'),'\nERRORS',errs);await b.close()})();

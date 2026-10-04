@@ -1,0 +1,11 @@
+# signing key: keep private, keep backed up somewhere safe
+android/hooponopono-release.jks
+android/keystore-password.txt
+# generated
+android/build/
+android/assets/
+app/index.html
+app/app.html
+app/check.js
+app/shots/
+dist/
