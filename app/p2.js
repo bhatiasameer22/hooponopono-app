@@ -78,7 +78,9 @@ const MEDS=[
  {id:'memories',title:'Healing Past Memories',min:15,tag:'Release',cats:['healing'],img:'sit_memories',hz:396,sit:['memories'],sub:'Erase what replays',
   lines:['Let a memory that keeps returning come to mind.','I take 100% responsibility for this memory within me.','I’m sorry. Please forgive me.','Thank you for showing me what is ready to be cleaned.','I love you.','I release and erase this memory. I return to zero.']},
  {id:'lettinggo',title:'Letting Go',min:10,tag:'Surrender',cats:['beginners','healing'],img:'sit_lettinggo',free:true,hz:432,sit:['lettinggo'],sub:'Open your hands',
-  lines:['Hold what you’re carrying as if in your open hands.','Feel its weight.','I’m sorry for holding on so tightly.','Please forgive me.','Thank you for what this taught me.','I love you. I let you go.','Watch it drift away like seeds on the wind.']}
+  lines:[‘Hold what you’re carrying as if in your open hands.’,’Feel its weight.’,’I’m sorry for holding on so tightly.’,’Please forgive me.’,’Thank you for what this taught me.’,’I love you. I let you go.’,’Watch it drift away like seeds on the wind.’]},
+ {id:’dearself’,title:’Dear Self’,min:5,tag:’Healing song’,cats:[‘beginners’,’healing’],img:’med_dearself’,pos:’60% 50%’,free:true,audio:’dear-self.mp3’,dur:327.4,sub:’I’m sorry · Please forgive me · Thank you · I love you’},
+ {id:’dearmoney’,title:’Dear Money’,min:5,tag:’Abundance song’,cats:[‘healing’],img:’med_dearmoney’,pos:’60% 50%’,free:true,audio:’dear-money.mp3’,dur:293.2,sub:’I’m sorry · Please forgive me · Thank you · I love you’}
 ];
 const MED=Object.fromEntries(MEDS.map(m=>[m.id,m]));
 const CHIPS=[['all','All'],['beginners','Beginners'],['healing','Healing'],['sleep','Sleep'],['anxiety','Anxiety'],['favorites','Favorites']];
