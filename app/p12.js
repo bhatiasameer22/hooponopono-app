@@ -86,7 +86,9 @@ AFTER.scriptSearch=()=>{
   const inp=$('#scriptSearchInput');
   if(inp){
     inp.addEventListener('input',()=>{UI.searchQ=inp.value;rerender()});
-    if(!UI.searchQ)inp.focus();
+    inp.focus();
+    const len=inp.value.length;
+    inp.setSelectionRange(len,len);
   }
 };
 
