@@ -176,7 +176,7 @@ const www = path.join(AND, 'assets', 'www');
 rmrf(path.join(AND, 'assets'));
 mkdirp(path.join(www, 'img'));
 for (const f of fs.readdirSync(APP))
-  if (f.endsWith('.ogg')) fs.copyFileSync(path.join(APP, f), path.join(www, f));
+  if (f.endsWith('.ogg') || f.endsWith('.mp3')) fs.copyFileSync(path.join(APP, f), path.join(www, f));
 for (const f of fs.readdirSync(path.join(APP, 'img')))
   if (f.endsWith('.webp')) fs.copyFileSync(path.join(APP, 'img', f), path.join(www, 'img', f));
 const frag = fs.readFileSync(path.join(APP, 'index.html'), 'utf8');
