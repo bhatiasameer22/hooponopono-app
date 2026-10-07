@@ -1,6 +1,6 @@
 /* ================= MUSIC TRACK SLIDER (home) =================
    To add a track: put <name>.ogg + <name>.mp3 beside the app, a thumbnail in img/, and add one entry to MEDS with audio:'<name>.mp3', added:'YYYY-MM-DD'. */
-MED.mantra.added='2026-09-29';MED.choosepeace.added='2026-10-03';MED.mantra21.added='2026-10-04';MED.dearself.added='2026-10-04';MED.dearmoney.added='2026-10-04';
+MED.mantra.added='2026-09-29';MED.choosepeace.added='2026-10-03';MED.mantra21.added='2026-10-04';MED.dearself.added='2026-10-04';MED.dearmoney.added='2026-10-04';MED.dearbody.added='2026-10-07';
 const tracks=()=>MEDS.filter(m=>m.audio).sort((a,b)=>(b.added||'').localeCompare(a.added||''));
 const _home8=SCREENS.home;
 SCREENS.home=p=>{const T=tracks();

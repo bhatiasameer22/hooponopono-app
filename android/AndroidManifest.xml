@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hooponopono.healing" android:versionCode="49" android:versionName="3.1">
-    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
+    package="com.hooponopono.healing" android:versionCode="51" android:versionName="3.1">
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
