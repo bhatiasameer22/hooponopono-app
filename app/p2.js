@@ -33,7 +33,8 @@ const I = {
   refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4.5h-4.5"/>', trash:'<path d="M5 7h14M9.5 7V4.5h5V7M7 7l1 13h8l1-13"/>',
   edit:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>', calendar:'<rect x="4" y="5.5" width="16" height="15" rx="3"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
   wind:'<path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3"/>', sparkle:'<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>',
-  speaker:'<path d="M11 5L6 9H3v6h3l5 4zM15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/>'
+  speaker:'<path d="M11 5L6 9H3v6h3l5 4zM15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/>',
+  share:'<path d="M17 8a3 3 0 1 0 0-4 3 3 0 0 0 0 4z"/><path d="M7 13a3 3 0 1 0 0-4 3 3 0 0 0 0 4z"/><path d="M17 20a3 3 0 1 0 0-4 3 3 0 0 0 0 4z"/><path d="M14.5 6.5l-5 3M9.5 13.5l5 3"/>'
 };
 const svg=(k,cls='',sw=1.8)=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
 const LOTUS_MARK=`<svg class="lotus-mark" viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M32 6c5.5 6 7.5 13 7.5 19 0 8-3.4 14-7.5 17-4.1-3-7.5-9-7.5-17 0-6 2-13 7.5-19z"/><path d="M24.6 22c-5-2-10-1.7-13.6 0 .6 9.5 7.8 17.3 21 20"/><path d="M39.4 22c5-2 10-1.7 13.6 0-.6 9.5-7.8 17.3-21 20"/><path d="M11 22.4C7 22 4 23 2 24.6c3.4 9.4 13 15.8 30 17.4M53 22.4c4-.4 7 .6 9 2.2-3.4 9.4-13 15.8-30 17.4"/></svg>`;

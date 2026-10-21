@@ -95,6 +95,38 @@ ACT.gjsave=function(){
   toast('Gratitude saved ✨');
 };
 
+// Rate & Share actions
+ACT.rateapp=function(){
+  var url='https://play.google.com/store/apps/details?id=com.hooponopono.healing';
+  if(window.AndroidApp&&AndroidApp.openUrl)AndroidApp.openUrl(url);
+  else window.open(url,'_blank');
+};
+ACT.shareapp=function(){
+  var msg='Try Ho\'oponopono: Heal & Meditate — a beautiful app for healing, meditation and daily affirmations.\nhttps://play.google.com/store/apps/details?id=com.hooponopono.healing';
+  if(navigator.share){navigator.share({text:msg}).catch(function(){});}
+  else if(window.AndroidApp&&AndroidApp.share)AndroidApp.share(msg,'Ho\'oponopono App');
+  else{try{navigator.clipboard.writeText(msg);}catch(e){}toast('Link copied ✨');}
+};
+
+// Add Rate & Share to More screen
+var _more15=SCREENS.more;
+SCREENS.more=function(p){
+  return _more15(p).replace(
+    '<button class="li" data-a="go" data-v="reminders">',
+    '<button class="li" data-a="rateapp">'+
+      '<span class="ico" style="background:#FFF3E0;color:#E88B00">'+svg('star')+'</span>'+
+      '<span class="grow">Rate the App</span>'+
+      '<span class="small muted">Leave a review ★</span>'+
+    '</button>'+
+    '<button class="li" data-a="shareapp">'+
+      '<span class="ico" style="background:#E8F5E9;color:#388E3C">'+svg('share')+'</span>'+
+      '<span class="grow">Share the App</span>'+
+      '<span class="small muted">Tell a friend</span>'+
+    '</button>'+
+    '<button class="li" data-a="go" data-v="reminders">'
+  );
+};
+
 // Add Gratitude tile to home screen
 var _home15=SCREENS.home;
 SCREENS.home=function(p){
