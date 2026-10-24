@@ -55,7 +55,7 @@ SCREENS.premium=function(){
       '<div class="pw-feat"><div class="pw-feat-icon">🚫</div><span>No ads, ever</span></div>'+
     '</div>'+
     '<div class="pw-plans">'+
-      '<button class="pw-plan" id="pw-monthly" onclick="ACT.pwselect(\'premium_monthly\')">'+
+      '<button class="pw-plan" id="pw-monthly" data-a="pwselect" data-v="premium_monthly">'+
         '<div class="pw-plan-left">'+
           '<div class="pw-plan-name">Monthly</div>'+
           '<div class="pw-plan-period">Billed every month</div>'+
@@ -64,7 +64,7 @@ SCREENS.premium=function(){
           '<div class="pw-plan-price">$4.99 / mo</div>'+
         '</div>'+
       '</button>'+
-      '<button class="pw-plan selected" id="pw-yearly" onclick="ACT.pwselect(\'premium_yearly\')">'+
+      '<button class="pw-plan selected" id="pw-yearly" data-a="pwselect" data-v="premium_yearly">'+
         '<div class="pw-plan-left">'+
           '<div class="pw-plan-name">Yearly</div>'+
           '<div class="pw-plan-period">Billed once a year — save 58%</div>'+
@@ -126,7 +126,10 @@ window.__purchaseCancelled=function(){
 window.__purchaseFailed=function(msg){
   var btn=document.getElementById('pw-cta-btn');
   if(btn)btn.classList.remove('pw-loading');
-  toast('Purchase failed. Please try again.');
+  toast('Purchase failed ('+msg+'). Please try again.');
+};
+window.__purchaseRetrying=function(){
+  toast('Loading plans, please wait…');
 };
 window.__billingRestore=function(found){
   if(found){

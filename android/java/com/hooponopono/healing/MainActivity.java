@@ -11,6 +11,7 @@ import android.app.AlarmManager;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import java.util.List;
+import java.util.ArrayList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -30,13 +31,33 @@ import android.webkit.WebViewClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
+import com.android.billingclient.api.QueryProductDetailsResult;
+import com.android.billingclient.api.PendingPurchasesParams;
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 
 public class MainActivity extends Activity {
     static volatile MainActivity instance;
     static final int REQ_FILE = 11, REQ_NOTIF = 12;
     static final String NOTIF_PERM = "android.permission.POST_NOTIFICATIONS";
+    static final String SKU_MONTHLY = "premium_monthly";
+    static final String SKU_YEARLY = "premium_yearly";
     private WebView web;
     private ValueCallback<Uri[]> filePick;
+    private BillingClient billingClient;
+    private ProductDetails monthlyDetails;
+    private ProductDetails yearlyDetails;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -87,6 +108,7 @@ public class MainActivity extends Activity {
             }
         });
         try { ReminderReceiver.scheduleAll(this); } catch (Exception e) { }
+        setupBilling();
 
         if (state != null) web.restoreState(state);
         else web.loadUrl("file:///android_asset/www/index.html");
@@ -188,6 +210,12 @@ public class MainActivity extends Activity {
     }
 
     public class Bridge {
+        @JavascriptInterface
+        public void purchase(final String sku) { launchPurchase(sku); }
+
+        @JavascriptInterface
+        public void restorePurchases() { restorePurchasesInternal(); }
+
         @JavascriptInterface
         public boolean canNotify() { return notifAllowed(); }
 
@@ -388,7 +416,128 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         try { stopService(new Intent(this, PlaybackService.class)); } catch (Exception e) { }
         if (instance == this) instance = null;
+        if (billingClient != null) { try { billingClient.endConnection(); } catch (Exception e) { } }
         if (web != null) { web.destroy(); web = null; }
         super.onDestroy();
+    }
+
+    private void setupBilling() {
+        billingClient = BillingClient.newBuilder(this)
+            .setListener(new PurchasesUpdatedListener() {
+                @Override
+                public void onPurchasesUpdated(BillingResult result, List<Purchase> purchases) {
+                    if (result.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
+                        for (Purchase p : purchases) handlePurchase(p);
+                    } else if (result.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
+                        js("window.__purchaseCancelled&&window.__purchaseCancelled()");
+                    } else {
+                        js("window.__purchaseFailed&&window.__purchaseFailed(" + result.getResponseCode() + ")");
+                    }
+                }
+            })
+            .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+            .build();
+
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(BillingResult result) {
+                if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    queryProducts();
+                    restorePurchasesInternal();
+                }
+            }
+            @Override
+            public void onBillingServiceDisconnected() { }
+        });
+    }
+
+    private void queryProducts() {
+        List<QueryProductDetailsParams.Product> productList = new ArrayList<QueryProductDetailsParams.Product>();
+        productList.add(QueryProductDetailsParams.Product.newBuilder()
+            .setProductId(SKU_MONTHLY)
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build());
+        productList.add(QueryProductDetailsParams.Product.newBuilder()
+            .setProductId(SKU_YEARLY)
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build());
+        QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
+            .setProductList(productList)
+            .build();
+        billingClient.queryProductDetailsAsync(params, new ProductDetailsResponseListener() {
+            @Override
+            public void onProductDetailsResponse(BillingResult result, QueryProductDetailsResult queryResult) {
+                if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) return;
+                for (ProductDetails d : queryResult.getProductDetailsList()) {
+                    if (SKU_MONTHLY.equals(d.getProductId())) monthlyDetails = d;
+                    if (SKU_YEARLY.equals(d.getProductId())) yearlyDetails = d;
+                }
+            }
+        });
+    }
+
+    private void handlePurchase(Purchase purchase) {
+        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged()) {
+                AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
+                    .setPurchaseToken(purchase.getPurchaseToken())
+                    .build();
+                billingClient.acknowledgePurchase(params, new AcknowledgePurchaseResponseListener() {
+                    @Override
+                    public void onAcknowledgePurchaseResponse(BillingResult r) { }
+                });
+            }
+            js("window.__purchaseSuccess&&window.__purchaseSuccess()");
+        }
+    }
+
+    private void restorePurchasesInternal() {
+        QueryPurchasesParams params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build();
+        billingClient.queryPurchasesAsync(params, new PurchasesResponseListener() {
+            @Override
+            public void onQueryPurchasesResponse(BillingResult result, List<Purchase> purchases) {
+                boolean active = false;
+                if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    for (Purchase p : purchases) {
+                        if (p.getPurchaseState() == Purchase.PurchaseState.PURCHASED) { active = true; break; }
+                    }
+                }
+                final boolean isPremium = active;
+                js("window.__billingRestore&&window.__billingRestore(" + isPremium + ")");
+            }
+        });
+    }
+
+    /* Called from Bridge */
+    void launchPurchase(final String sku) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ProductDetails details = SKU_MONTHLY.equals(sku) ? monthlyDetails : yearlyDetails;
+                if (details == null) {
+                    // Products not loaded yet — re-query then retry
+                    queryProducts();
+                    js("window.__purchaseRetrying&&window.__purchaseRetrying()");
+                    final String retrySku = sku;
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override public void run() { launchPurchase(retrySku); }
+                    }, 3000);
+                    return;
+                }
+                List<ProductDetails.SubscriptionOfferDetails> offers = details.getSubscriptionOfferDetails();
+                if (offers == null || offers.isEmpty()) { js("window.__purchaseFailed&&window.__purchaseFailed(-2)"); return; }
+                List<BillingFlowParams.ProductDetailsParams> pdList = new ArrayList<BillingFlowParams.ProductDetailsParams>();
+                pdList.add(BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setProductDetails(details)
+                    .setOfferToken(offers.get(0).getOfferToken())
+                    .build());
+                BillingFlowParams fp = BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(pdList)
+                    .build();
+                billingClient.launchBillingFlow(MainActivity.this, fp);
+            }
+        });
     }
 }
