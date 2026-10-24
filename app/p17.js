@@ -45,8 +45,8 @@ SCREENS.premium=function(){
 
   return '<div class="view-inner"><div id="pw-wrap">'+
     '<div class="pw-lotus">🌺</div>'+
-    '<h1 class="pw-title">Unlock Full Healing</h1>'+
-    '<p class="pw-sub">Access every meditation, script,<br>song and practice — ad-free, forever.</p>'+
+    '<h1 class="pw-title">Try Free for 3 Days</h1>'+
+    '<p class="pw-sub">Full access to every meditation, script &amp; song.<br>Cancel anytime — no charge for 3 days.</p>'+
     '<div class="pw-features">'+
       '<div class="pw-feat"><div class="pw-feat-icon">🎵</div><span>All meditations &amp; healing music</span></div>'+
       '<div class="pw-feat"><div class="pw-feat-icon">📜</div><span>10+ guided healing scripts</span></div>'+
@@ -58,7 +58,7 @@ SCREENS.premium=function(){
       '<button class="pw-plan" id="pw-monthly" data-a="pwselect" data-v="premium_monthly">'+
         '<div class="pw-plan-left">'+
           '<div class="pw-plan-name">Monthly</div>'+
-          '<div class="pw-plan-period">Billed every month</div>'+
+          '<div class="pw-plan-period">3 days free, then $4.99/month</div>'+
         '</div>'+
         '<div class="pw-plan-right">'+
           '<div class="pw-plan-price">$4.99 / mo</div>'+
@@ -67,7 +67,7 @@ SCREENS.premium=function(){
       '<button class="pw-plan selected" id="pw-yearly" data-a="pwselect" data-v="premium_yearly">'+
         '<div class="pw-plan-left">'+
           '<div class="pw-plan-name">Yearly</div>'+
-          '<div class="pw-plan-period">Billed once a year — save 58%</div>'+
+          '<div class="pw-plan-period">3 days free, then $24.99/year</div>'+
         '</div>'+
         '<div class="pw-plan-right">'+
           '<div class="pw-plan-badge">BEST VALUE</div>'+
@@ -75,9 +75,9 @@ SCREENS.premium=function(){
         '</div>'+
       '</button>'+
     '</div>'+
-    '<button class="pw-cta" id="pw-cta-btn" data-a="pwbuy">Start Premium</button>'+
+    '<button class="pw-cta" id="pw-cta-btn" data-a="pwbuy">Start Free Trial</button>'+
     '<button class="pw-restore" data-a="pwrestore">Restore purchase</button>'+
-    '<p class="pw-terms">Subscription renews automatically. Cancel anytime in Google Play. Payment charged to your Google account. By subscribing you agree to our terms of service.</p>'+
+    '<p class="pw-terms">3-day free trial, then auto-renews. Cancel anytime in Google Play before trial ends. Payment charged to your Google account.</p>'+
   '</div></div>';
 };
 
@@ -202,8 +202,8 @@ function showLaunchPaywall(){
   el.id='pw-gate';
   el.innerHTML='<div class="pw-gate-inner">'+
     '<div class="pw-gate-img">🌺</div>'+
-    '<h1 class="pw-gate-title">Begin Your Healing Journey</h1>'+
-    '<p class="pw-gate-sub">Unlock every meditation, healing script,<br>guided practice and song.</p>'+
+    '<h1 class="pw-gate-title">Try Free for 3 Days</h1>'+
+    '<p class="pw-gate-sub">Full access to every meditation, script &amp; song.<br>No charge for 3 days — cancel anytime.</p>'+
     '<div class="pw-gate-feats">'+
       '<div class="pw-gate-feat"><span>🎵</span><span>All meditations &amp; healing music</span></div>'+
       '<div class="pw-gate-feat"><span>📜</span><span>10+ guided healing scripts</span></div>'+
@@ -212,17 +212,17 @@ function showLaunchPaywall(){
     '</div>'+
     '<div class="pw-gate-plans">'+
       '<div class="pw-gate-plan" id="pwg-monthly">'+
-        '<div><div class="pw-gate-pname">Monthly</div><div class="pw-gate-pperiod">Billed every month</div></div>'+
+        '<div><div class="pw-gate-pname">Monthly</div><div class="pw-gate-pperiod">3 days free, then $4.99/mo</div></div>'+
         '<div class="pw-gate-pprice">$4.99 / mo</div>'+
       '</div>'+
       '<div class="pw-gate-plan sel" id="pwg-yearly">'+
-        '<div><div class="pw-gate-pname">Yearly</div><div class="pw-gate-pperiod">Save 58%</div></div>'+
+        '<div><div class="pw-gate-pname">Yearly</div><div class="pw-gate-pperiod">3 days free, then $24.99/yr</div></div>'+
         '<div style="text-align:right"><div class="pw-gate-badge">BEST VALUE</div><div class="pw-gate-pprice">$24.99 / yr</div></div>'+
       '</div>'+
     '</div>'+
-    '<button class="pw-gate-cta" id="pwg-cta">Start Premium</button>'+
+    '<button class="pw-gate-cta" id="pwg-cta">Start Free Trial</button>'+
     '<button class="pw-gate-skip" id="pwg-skip">Maybe later — explore free content</button>'+
-    '<p class="pw-gate-terms">Subscription renews automatically. Cancel anytime in Google Play.</p>'+
+    '<p class="pw-gate-terms">3-day free trial, then auto-renews. Cancel anytime in Google Play before trial ends.</p>'+
   '</div>';
 
   document.getElementById('pwg-monthly').addEventListener('click',function(){
