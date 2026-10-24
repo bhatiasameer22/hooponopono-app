@@ -27,7 +27,7 @@ _pwStyle.textContent=
 '.pw-already-title{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--sage);margin-bottom:4px}';
 document.head.appendChild(_pwStyle);
 
-var _sel='premium_monthly';
+var _sel='premium_yearly';
 
 SCREENS.premium=function(){
   if(S.premium){
@@ -256,7 +256,7 @@ var _origRender17=render;
 render=function(){
   _origRender17.apply(this,arguments);
   if(!S.premium){
-    setTimeout(showLaunchPaywall,200);
+    showLaunchPaywall();
   }
 };
 

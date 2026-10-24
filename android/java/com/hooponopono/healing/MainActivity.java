@@ -536,10 +536,21 @@ public class MainActivity extends Activity {
                 }
                 List<ProductDetails.SubscriptionOfferDetails> offers = details.getSubscriptionOfferDetails();
                 if (offers == null || offers.isEmpty()) { js("window.__purchaseFailed&&window.__purchaseFailed(-2)"); return; }
+                // Prefer the offer that includes a free trial phase
+                String offerToken = offers.get(0).getOfferToken();
+                for (int i = 0; i < offers.size(); i++) {
+                    List<ProductDetails.PricingPhase> phases = offers.get(i).getPricingPhases().getPricingPhaseList();
+                    for (int j = 0; j < phases.size(); j++) {
+                        if (phases.get(j).getPriceAmountMicros() == 0) {
+                            offerToken = offers.get(i).getOfferToken();
+                            break;
+                        }
+                    }
+                }
                 List<BillingFlowParams.ProductDetailsParams> pdList = new ArrayList<BillingFlowParams.ProductDetailsParams>();
                 pdList.add(BillingFlowParams.ProductDetailsParams.newBuilder()
                     .setProductDetails(details)
-                    .setOfferToken(offers.get(0).getOfferToken())
+                    .setOfferToken(offerToken)
                     .build());
                 BillingFlowParams fp = BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(pdList)
