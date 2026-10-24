@@ -512,18 +512,26 @@ public class MainActivity extends Activity {
 
     /* Called from Bridge */
     void launchPurchase(final String sku) {
+        launchPurchaseWithRetry(sku, 0);
+    }
+
+    void launchPurchaseWithRetry(final String sku, final int attempt) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ProductDetails details = SKU_MONTHLY.equals(sku) ? monthlyDetails : yearlyDetails;
                 if (details == null) {
-                    // Products not loaded yet — re-query then retry
-                    queryProducts();
-                    js("window.__purchaseRetrying&&window.__purchaseRetrying()");
-                    final String retrySku = sku;
+                    if (attempt >= 5) {
+                        js("window.__purchaseFailed&&window.__purchaseFailed(-1)");
+                        return;
+                    }
+                    if (attempt == 0) {
+                        js("window.__purchaseRetrying&&window.__purchaseRetrying()");
+                        queryProducts();
+                    }
                     new android.os.Handler().postDelayed(new Runnable() {
-                        @Override public void run() { launchPurchase(retrySku); }
-                    }, 3000);
+                        @Override public void run() { launchPurchaseWithRetry(sku, attempt + 1); }
+                    }, 2000);
                     return;
                 }
                 List<ProductDetails.SubscriptionOfferDetails> offers = details.getSubscriptionOfferDetails();

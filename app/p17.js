@@ -256,7 +256,7 @@ var _origRender17=render;
 render=function(){
   _origRender17.apply(this,arguments);
   if(!S.premium){
-    setTimeout(showLaunchPaywall,600);
+    setTimeout(showLaunchPaywall,200);
   }
 };
 
