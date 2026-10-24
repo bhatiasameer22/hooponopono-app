@@ -173,7 +173,7 @@ SCREENS.home=function(p){
 /* ---- B2 Launch Paywall overlay ---- */
 var _pwOverlayStyle=document.createElement('style');
 _pwOverlayStyle.textContent=
-'#pw-gate{position:fixed;inset:0;z-index:8888;overflow-y:auto;background:var(--bg)}'+
+'#pw-gate{position:fixed;inset:0;z-index:10000;overflow-y:auto;background:var(--cream,#FBF6EE)}'+
 '#pw-gate .pw-gate-inner{display:flex;flex-direction:column;align-items:center;padding:36px 24px 40px;max-width:460px;margin:0 auto;text-align:center}'+
 '#pw-gate .pw-gate-img{font-size:72px;line-height:1;margin-bottom:16px}'+
 '#pw-gate .pw-gate-title{font-family:var(--serif);font-size:1.7rem;font-weight:700;color:var(--ink);margin:0 0 8px}'+
@@ -225,30 +225,30 @@ function showLaunchPaywall(){
     '<p class="pw-gate-terms">3-day free trial, then auto-renews. Cancel anytime in Google Play before trial ends.</p>'+
   '</div>';
 
-  document.getElementById('pwg-monthly').addEventListener('click',function(){
+  document.body.appendChild(el);
+
+  el.querySelector('#pwg-monthly').addEventListener('click',function(){
     _pwGateSel='premium_monthly';
-    document.getElementById('pwg-monthly').classList.add('sel');
-    document.getElementById('pwg-yearly').classList.remove('sel');
+    el.querySelector('#pwg-monthly').classList.add('sel');
+    el.querySelector('#pwg-yearly').classList.remove('sel');
   });
-  document.getElementById('pwg-yearly').addEventListener('click',function(){
+  el.querySelector('#pwg-yearly').addEventListener('click',function(){
     _pwGateSel='premium_yearly';
-    document.getElementById('pwg-yearly').classList.add('sel');
-    document.getElementById('pwg-monthly').classList.remove('sel');
+    el.querySelector('#pwg-yearly').classList.add('sel');
+    el.querySelector('#pwg-monthly').classList.remove('sel');
   });
-  document.getElementById('pwg-cta').addEventListener('click',function(){
+  el.querySelector('#pwg-cta').addEventListener('click',function(){
     if(window.AndroidApp&&AndroidApp.purchase){
       AndroidApp.purchase(_pwGateSel);
     }else{
       toast('Purchase unavailable outside the app');
     }
   });
-  document.getElementById('pwg-skip').addEventListener('click',function(){
+  el.querySelector('#pwg-skip').addEventListener('click',function(){
     el.style.transition='opacity .35s';
     el.style.opacity='0';
     setTimeout(function(){el.remove();},350);
   });
-
-  document.body.appendChild(el);
 }
 
 // Show on every app launch for non-premium users
