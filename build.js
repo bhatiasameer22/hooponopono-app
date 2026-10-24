@@ -202,7 +202,7 @@ console.log('5. Compiling Java...');
 const srcs = [...globFiles(path.join(AND, 'java'), '.java'), ...globFiles(path.join(B, 'gen'), '.java')];
 const ecjR = cp.spawnSync('java', ['-jar', jar('ecj-3.45.0.jar'), '-source', '8', '-target', '8',
   '-encoding', 'UTF-8', '-nowarn', '-bootclasspath', jar('android.jar'),
-  '-classpath', jar('android.jar'), '-d', path.join(B, 'classes'), ...srcs],
+  '-classpath', [jar('android.jar'), jar('billing.jar')].join(path.delimiter), '-d', path.join(B, 'classes'), ...srcs],
   {encoding:'utf8', maxBuffer:50*1024*1024});
 const ecjOut = (ecjR.stdout||'') + (ecjR.stderr||'');
 if (ecjOut.includes('ERROR in')) fail('Java compile failed\n' + ecjOut.slice(-4000));
@@ -210,7 +210,7 @@ if (ecjOut.includes('ERROR in')) fail('Java compile failed\n' + ecjOut.slice(-40
 console.log('6. Dexing...');
 const classes = globFiles(path.join(B, 'classes'), '.class');
 run('java', ['-cp', jar('d8.jar'), 'com.android.tools.r8.D8', '--release',
-  '--min-api', '24', '--lib', jar('android.jar'), '--output', path.join(B, 'dex'), ...classes]);
+  '--min-api', '24', '--lib', jar('android.jar'), '--output', path.join(B, 'dex'), jar('billing.jar'), ...classes]);
 
 console.log('7. Packaging + aligning...');
 const resApkBuf = fs.readFileSync(path.join(B, 'res.apk'));
