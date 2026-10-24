@@ -162,13 +162,111 @@ var _home17=SCREENS.home;
 SCREENS.home=function(p){
   var html=_home17(p);
   if(S.premium)return html;
-  // inject a small banner after the first heading
-  var banner='<div style="margin:0 16px 16px;padding:14px 16px;background:linear-gradient(90deg,#FFF8E6,#FFF3DC);border-radius:var(--r-lg);display:flex;align-items:center;gap:12px;cursor:pointer" onclick="nav(\'premium\')">'+
+  var banner='<div style="margin:0 16px 16px;padding:14px 16px;background:linear-gradient(90deg,#FFF8E6,#FFF3DC);border-radius:var(--r-lg);display:flex;align-items:center;gap:12px;cursor:pointer" data-a="go" data-v="premium">'+
     '<span style="font-size:1.4rem">🌺</span>'+
     '<div style="flex:1"><div style="font-family:var(--serif);font-weight:700;font-size:.95rem;color:#A06A00">Unlock Full Access</div><div style="font-size:.78rem;color:#C8860A">All meditations, scripts &amp; music</div></div>'+
     '<span style="color:#C8860A;font-size:1.1rem">›</span>'+
   '</div>';
   return html.replace('<div class="tiles"',banner+'<div class="tiles"');
+};
+
+/* ---- B2 Launch Paywall overlay ---- */
+var _pwOverlayStyle=document.createElement('style');
+_pwOverlayStyle.textContent=
+'#pw-gate{position:fixed;inset:0;z-index:8888;overflow-y:auto;background:var(--bg)}'+
+'#pw-gate .pw-gate-inner{display:flex;flex-direction:column;align-items:center;padding:36px 24px 40px;max-width:460px;margin:0 auto;text-align:center}'+
+'#pw-gate .pw-gate-img{font-size:72px;line-height:1;margin-bottom:16px}'+
+'#pw-gate .pw-gate-title{font-family:var(--serif);font-size:1.7rem;font-weight:700;color:var(--ink);margin:0 0 8px}'+
+'#pw-gate .pw-gate-sub{font-size:.95rem;color:var(--muted);margin:0 0 24px;line-height:1.55}'+
+'#pw-gate .pw-gate-feats{width:100%;background:var(--beige);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:22px;text-align:left;display:flex;flex-direction:column;gap:10px}'+
+'#pw-gate .pw-gate-feat{display:flex;align-items:center;gap:10px;font-size:.93rem;color:var(--ink)}'+
+'#pw-gate .pw-gate-plans{width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}'+
+'#pw-gate .pw-gate-plan{width:100%;padding:14px 16px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s}'+
+'#pw-gate .pw-gate-plan.sel{border-color:var(--sage);background:var(--beige)}'+
+'#pw-gate .pw-gate-pname{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--ink)}'+
+'#pw-gate .pw-gate-pperiod{font-size:.78rem;color:var(--muted)}'+
+'#pw-gate .pw-gate-pprice{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--sage)}'+
+'#pw-gate .pw-gate-badge{background:#C8860A;color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px}'+
+'#pw-gate .pw-gate-cta{width:100%;padding:16px;border-radius:var(--r-lg);background:var(--sage);color:#fff;font-family:var(--serif);font-size:1.05rem;font-weight:700;border:none;cursor:pointer;margin-bottom:10px}'+
+'#pw-gate .pw-gate-skip{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;padding:10px;text-decoration:underline}'+
+'#pw-gate .pw-gate-terms{font-size:.7rem;color:var(--muted);line-height:1.5;margin-top:10px;max-width:320px}';
+document.head.appendChild(_pwOverlayStyle);
+
+var _pwGateSel='premium_yearly';
+
+function showLaunchPaywall(){
+  if(S.premium)return;
+  if(document.getElementById('pw-gate'))return;
+
+  var el=document.createElement('div');
+  el.id='pw-gate';
+  el.innerHTML='<div class="pw-gate-inner">'+
+    '<div class="pw-gate-img">🌺</div>'+
+    '<h1 class="pw-gate-title">Begin Your Healing Journey</h1>'+
+    '<p class="pw-gate-sub">Unlock every meditation, healing script,<br>guided practice and song.</p>'+
+    '<div class="pw-gate-feats">'+
+      '<div class="pw-gate-feat"><span>🎵</span><span>All meditations &amp; healing music</span></div>'+
+      '<div class="pw-gate-feat"><span>📜</span><span>10+ guided healing scripts</span></div>'+
+      '<div class="pw-gate-feat"><span>✨</span><span>Quantum scripts &amp; 21-day challenge</span></div>'+
+      '<div class="pw-gate-feat"><span>📿</span><span>Unlimited mala counter &amp; 55×5</span></div>'+
+    '</div>'+
+    '<div class="pw-gate-plans">'+
+      '<div class="pw-gate-plan" id="pwg-monthly">'+
+        '<div><div class="pw-gate-pname">Monthly</div><div class="pw-gate-pperiod">Billed every month</div></div>'+
+        '<div class="pw-gate-pprice">$4.99 / mo</div>'+
+      '</div>'+
+      '<div class="pw-gate-plan sel" id="pwg-yearly">'+
+        '<div><div class="pw-gate-pname">Yearly</div><div class="pw-gate-pperiod">Save 58%</div></div>'+
+        '<div style="text-align:right"><div class="pw-gate-badge">BEST VALUE</div><div class="pw-gate-pprice">$24.99 / yr</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<button class="pw-gate-cta" id="pwg-cta">Start Premium</button>'+
+    '<button class="pw-gate-skip" id="pwg-skip">Maybe later — explore free content</button>'+
+    '<p class="pw-gate-terms">Subscription renews automatically. Cancel anytime in Google Play.</p>'+
+  '</div>';
+
+  document.getElementById('pwg-monthly').addEventListener('click',function(){
+    _pwGateSel='premium_monthly';
+    document.getElementById('pwg-monthly').classList.add('sel');
+    document.getElementById('pwg-yearly').classList.remove('sel');
+  });
+  document.getElementById('pwg-yearly').addEventListener('click',function(){
+    _pwGateSel='premium_yearly';
+    document.getElementById('pwg-yearly').classList.add('sel');
+    document.getElementById('pwg-monthly').classList.remove('sel');
+  });
+  document.getElementById('pwg-cta').addEventListener('click',function(){
+    if(window.AndroidApp&&AndroidApp.purchase){
+      AndroidApp.purchase(_pwGateSel);
+    }else{
+      toast('Purchase unavailable outside the app');
+    }
+  });
+  document.getElementById('pwg-skip').addEventListener('click',function(){
+    el.style.transition='opacity .35s';
+    el.style.opacity='0';
+    setTimeout(function(){el.remove();},350);
+  });
+
+  document.body.appendChild(el);
+}
+
+// Show on every app launch for non-premium users
+var _origRender17=render;
+render=function(){
+  _origRender17.apply(this,arguments);
+  if(!S.premium){
+    setTimeout(showLaunchPaywall,600);
+  }
+};
+
+// Remove gate overlay on purchase success
+var _origSuccess=window.__purchaseSuccess;
+window.__purchaseSuccess=function(){
+  var gate=document.getElementById('pw-gate');
+  if(gate)gate.remove();
+  if(_origSuccess)_origSuccess();
+  else{S.premium=true;save();toast('Welcome to Premium! 🌺');nav('premium');}
 };
 
 })();
