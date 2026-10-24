@@ -1,0 +1,171 @@
+/* ================= PAYWALL / PREMIUM ================= */
+(function(){
+
+var _pwStyle=document.createElement('style');
+_pwStyle.textContent=
+'#pw-wrap{display:flex;flex-direction:column;align-items:center;padding:28px 20px 60px;max-width:460px;margin:0 auto;text-align:center}'+
+'.pw-lotus{font-size:64px;line-height:1;margin-bottom:12px}'+
+'.pw-title{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--ink);margin:0 0 6px}'+
+'.pw-sub{font-size:.95rem;color:var(--muted);margin:0 0 22px;line-height:1.5}'+
+'.pw-features{width:100%;background:var(--beige);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:24px;text-align:left;display:flex;flex-direction:column;gap:10px}'+
+'.pw-feat{display:flex;align-items:center;gap:12px;font-size:.95rem;color:var(--ink)}'+
+'.pw-feat-icon{width:28px;height:28px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem}'+
+'.pw-plans{width:100%;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}'+
+'.pw-plan{width:100%;padding:16px 18px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s}'+
+'.pw-plan.selected{border-color:var(--sage);background:var(--beige)}'+
+'.pw-plan-left{display:flex;flex-direction:column;gap:2px}'+
+'.pw-plan-name{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--ink)}'+
+'.pw-plan-period{font-size:.8rem;color:var(--muted)}'+
+'.pw-plan-price{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--sage)}'+
+'.pw-plan-badge{background:var(--gold,#C8860A);color:#fff;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.04em}'+
+'.pw-plan-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}'+
+'.pw-cta{width:100%;padding:17px;border-radius:var(--r-lg);background:var(--sage);color:#fff;font-family:var(--serif);font-size:1.1rem;font-weight:700;border:none;cursor:pointer;margin-bottom:12px}'+
+'.pw-restore{background:none;border:none;color:var(--muted);font-size:.88rem;cursor:pointer;padding:8px;text-decoration:underline}'+
+'.pw-terms{font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:12px;max-width:340px}'+
+'.pw-loading{opacity:.5;pointer-events:none}'+
+'.pw-already{background:var(--beige);border-radius:var(--r-lg);padding:20px;width:100%;text-align:center;margin-bottom:16px}'+
+'.pw-already-title{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--sage);margin-bottom:4px}';
+document.head.appendChild(_pwStyle);
+
+var _sel='premium_monthly';
+
+SCREENS.premium=function(){
+  if(S.premium){
+    return '<div class="view-inner"><div id="pw-wrap">'+
+      '<div class="pw-lotus">🌺</div>'+
+      '<h1 class="pw-title">You\'re Premium</h1>'+
+      '<p class="pw-sub">Thank you for supporting Ho\'oponopono.<br>All content is unlocked for you.</p>'+
+      '<div class="pw-already">'+
+        '<div class="pw-already-title">✨ Full Access Active</div>'+
+        '<p style="font-size:.88rem;color:var(--muted);margin:6px 0 0">Enjoy unlimited meditations,<br>healing scripts and music.</p>'+
+      '</div>'+
+      '<button class="btn" data-a="go" data-v="home">Back to Home</button>'+
+    '</div></div>';
+  }
+
+  return '<div class="view-inner"><div id="pw-wrap">'+
+    '<div class="pw-lotus">🌺</div>'+
+    '<h1 class="pw-title">Unlock Full Healing</h1>'+
+    '<p class="pw-sub">Access every meditation, script,<br>song and practice — ad-free, forever.</p>'+
+    '<div class="pw-features">'+
+      '<div class="pw-feat"><div class="pw-feat-icon">🎵</div><span>All meditations &amp; healing music</span></div>'+
+      '<div class="pw-feat"><div class="pw-feat-icon">📜</div><span>10+ guided healing scripts</span></div>'+
+      '<div class="pw-feat"><div class="pw-feat-icon">✨</div><span>Quantum scripts &amp; 21-day challenge</span></div>'+
+      '<div class="pw-feat"><div class="pw-feat-icon">📿</div><span>Unlimited mala counter &amp; 55×5</span></div>'+
+      '<div class="pw-feat"><div class="pw-feat-icon">🚫</div><span>No ads, ever</span></div>'+
+    '</div>'+
+    '<div class="pw-plans">'+
+      '<button class="pw-plan" id="pw-monthly" onclick="ACT.pwselect(\'premium_monthly\')">'+
+        '<div class="pw-plan-left">'+
+          '<div class="pw-plan-name">Monthly</div>'+
+          '<div class="pw-plan-period">Billed every month</div>'+
+        '</div>'+
+        '<div class="pw-plan-right">'+
+          '<div class="pw-plan-price">$4.99 / mo</div>'+
+        '</div>'+
+      '</button>'+
+      '<button class="pw-plan selected" id="pw-yearly" onclick="ACT.pwselect(\'premium_yearly\')">'+
+        '<div class="pw-plan-left">'+
+          '<div class="pw-plan-name">Yearly</div>'+
+          '<div class="pw-plan-period">Billed once a year — save 58%</div>'+
+        '</div>'+
+        '<div class="pw-plan-right">'+
+          '<div class="pw-plan-badge">BEST VALUE</div>'+
+          '<div class="pw-plan-price">$24.99 / yr</div>'+
+        '</div>'+
+      '</button>'+
+    '</div>'+
+    '<button class="pw-cta" id="pw-cta-btn" data-a="pwbuy">Start Premium</button>'+
+    '<button class="pw-restore" data-a="pwrestore">Restore purchase</button>'+
+    '<p class="pw-terms">Subscription renews automatically. Cancel anytime in Google Play. Payment charged to your Google account. By subscribing you agree to our terms of service.</p>'+
+  '</div></div>';
+};
+
+ACT.pwselect=function(sku){
+  _sel=sku;
+  var m=document.getElementById('pw-monthly');
+  var y=document.getElementById('pw-yearly');
+  if(m)m.classList.toggle('selected',sku==='premium_monthly');
+  if(y)y.classList.toggle('selected',sku==='premium_yearly');
+};
+
+ACT.pwbuy=function(){
+  var btn=document.getElementById('pw-cta-btn');
+  if(btn)btn.classList.add('pw-loading');
+  if(window.AndroidApp&&AndroidApp.purchase){
+    AndroidApp.purchase(_sel);
+  }else{
+    // dev/web fallback — simulate
+    setTimeout(function(){
+      if(btn)btn.classList.remove('pw-loading');
+      toast('Purchase unavailable outside the app');
+    },800);
+  }
+};
+
+ACT.pwrestore=function(){
+  toast('Checking purchases…');
+  if(window.AndroidApp&&AndroidApp.restorePurchases){
+    AndroidApp.restorePurchases();
+  }else{
+    setTimeout(function(){toast('No purchases found');},800);
+  }
+};
+
+// Callbacks from Java
+window.__purchaseSuccess=function(){
+  S.premium=true;save();
+  toast('Welcome to Premium! 🌺');
+  nav('premium');
+};
+window.__purchaseCancelled=function(){
+  var btn=document.getElementById('pw-cta-btn');
+  if(btn)btn.classList.remove('pw-loading');
+  toast('Purchase cancelled');
+};
+window.__purchaseFailed=function(msg){
+  var btn=document.getElementById('pw-cta-btn');
+  if(btn)btn.classList.remove('pw-loading');
+  toast('Purchase failed. Please try again.');
+};
+window.__billingRestore=function(found){
+  if(found){
+    S.premium=true;save();
+    toast('Premium restored! 🌺');
+    nav('premium');
+  }else{
+    toast('No active subscription found');
+  }
+};
+
+// Add Premium button to More screen
+var _more17=SCREENS.more;
+SCREENS.more=function(p){
+  var html=_more17(p);
+  if(S.premium)return html;
+  return html.replace(
+    '<button class="li" data-a="rateapp">',
+    '<button class="li" data-a="go" data-v="premium" style="background:linear-gradient(90deg,#FFF8E6,#FFF3DC)">'+
+      '<span class="ico" style="background:#FFF3E0;color:#C8860A">🌺</span>'+
+      '<span class="grow" style="font-weight:700;color:#A06A00">Unlock Premium</span>'+
+      '<span class="small" style="color:#C8860A;font-weight:600">$4.99/mo →</span>'+
+    '</button>'+
+    '<button class="li" data-a="rateapp">'
+  );
+};
+
+// Add Premium banner to home screen for free users
+var _home17=SCREENS.home;
+SCREENS.home=function(p){
+  var html=_home17(p);
+  if(S.premium)return html;
+  // inject a small banner after the first heading
+  var banner='<div style="margin:0 16px 16px;padding:14px 16px;background:linear-gradient(90deg,#FFF8E6,#FFF3DC);border-radius:var(--r-lg);display:flex;align-items:center;gap:12px;cursor:pointer" onclick="nav(\'premium\')">'+
+    '<span style="font-size:1.4rem">🌺</span>'+
+    '<div style="flex:1"><div style="font-family:var(--serif);font-weight:700;font-size:.95rem;color:#A06A00">Unlock Full Access</div><div style="font-size:.78rem;color:#C8860A">All meditations, scripts &amp; music</div></div>'+
+    '<span style="color:#C8860A;font-size:1.1rem">›</span>'+
+  '</div>';
+  return html.replace('<div class="tiles"',banner+'<div class="tiles"');
+};
+
+})();
