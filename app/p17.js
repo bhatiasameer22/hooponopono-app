@@ -121,11 +121,15 @@ window.__purchaseSuccess=function(){
 window.__purchaseCancelled=function(){
   var btn=document.getElementById('pw-cta-btn');
   if(btn)btn.classList.remove('pw-loading');
+  var gBtn=document.getElementById('pwg-cta');
+  if(gBtn){gBtn.textContent='Start Free Trial';gBtn.style.opacity='';gBtn.style.pointerEvents='';}
   toast('Purchase cancelled');
 };
 window.__purchaseFailed=function(msg){
   var btn=document.getElementById('pw-cta-btn');
   if(btn)btn.classList.remove('pw-loading');
+  var gBtn=document.getElementById('pwg-cta');
+  if(gBtn){gBtn.textContent='Start Free Trial';gBtn.style.opacity='';gBtn.style.pointerEvents='';}
   toast('Purchase failed ('+msg+'). Please try again.');
 };
 window.__purchaseRetrying=function(){
@@ -238,10 +242,15 @@ function showLaunchPaywall(){
     el.querySelector('#pwg-monthly').classList.remove('sel');
   });
   el.querySelector('#pwg-cta').addEventListener('click',function(){
+    var btn=el.querySelector('#pwg-cta');
+    if(btn){btn.textContent='Loading…';btn.style.opacity='.6';btn.style.pointerEvents='none';}
     if(window.AndroidApp&&AndroidApp.purchase){
       AndroidApp.purchase(_pwGateSel);
     }else{
-      toast('Purchase unavailable outside the app');
+      setTimeout(function(){
+        if(btn){btn.textContent='Start Free Trial';btn.style.opacity='';btn.style.pointerEvents='';}
+        toast('Purchase unavailable outside the app');
+      },800);
     }
   });
   el.querySelector('#pwg-skip').addEventListener('click',function(){
@@ -251,13 +260,9 @@ function showLaunchPaywall(){
   });
 }
 
-// Show on every app launch for non-premium users
-var _origRender17=render;
-render=function(){
-  _origRender17.apply(this,arguments);
-  if(!S.premium){
-    showLaunchPaywall();
-  }
+// Show paywall once, right after onboarding completes (Option A)
+window.__afterOnboarding=function(){
+  if(!S.premium)showLaunchPaywall();
 };
 
 // Remove gate overlay on purchase success

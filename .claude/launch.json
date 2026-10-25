@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["serve.js"],
       "port": 4321
+    },
+    {
+      "name": "Magnetic Woman",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["serve-game.js"],
+      "port": 4322
     }
   ]
 }

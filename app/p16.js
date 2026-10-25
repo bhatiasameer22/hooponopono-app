@@ -57,9 +57,13 @@ _obStyle.textContent=
 document.head.appendChild(_obStyle);
 
 function obDone(){
-  S.onboarded=true;save();
+  S.onboarded=true;S.nameSet=true;save();
+  tab('home');
   var el=document.getElementById('ob-overlay');
-  if(el){el.style.transition='opacity .4s';el.style.opacity='0';setTimeout(function(){el.remove();},400);}
+  if(el){el.style.transition='opacity .4s';el.style.opacity='0';setTimeout(function(){
+    el.remove();
+    if(window.__afterOnboarding)window.__afterOnboarding();
+  },400);}
 }
 
 function animateIn(slide){
