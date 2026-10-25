@@ -256,7 +256,10 @@ function showLaunchPaywall(){
   el.querySelector('#pwg-skip').addEventListener('click',function(){
     el.style.transition='opacity .35s';
     el.style.opacity='0';
-    setTimeout(function(){el.remove();},350);
+    setTimeout(function(){
+      el.remove();
+      if(!S.name&&typeof ACT!=='undefined'&&ACT.editname)setTimeout(function(){ACT.editname();},100);
+    },350);
   });
 }
 
@@ -272,6 +275,7 @@ window.__purchaseSuccess=function(){
   if(gate)gate.remove();
   if(_origSuccess)_origSuccess();
   else{S.premium=true;save();toast('Welcome to Premium! 🌺');nav('premium');}
+  if(!S.name&&typeof ACT!=='undefined'&&ACT.editname)setTimeout(function(){ACT.editname();},400);
 };
 
 })();
