@@ -31,6 +31,9 @@ import android.webkit.WebViewClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.UUID;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
@@ -53,6 +56,7 @@ public class MainActivity extends Activity {
     static final String NOTIF_PERM = "android.permission.POST_NOTIFICATIONS";
     static final String SKU_MONTHLY = "premium_monthly";
     static final String SKU_YEARLY = "premium_yearly";
+    static final String RC_API_KEY = "test_gyQHvgvAlLZVQXeBjjqiQkyaQGE";
     private WebView web;
     private ValueCallback<Uri[]> filePick;
     private BillingClient billingClient;
@@ -487,8 +491,49 @@ public class MainActivity extends Activity {
                     public void onAcknowledgePurchaseResponse(BillingResult r) { }
                 });
             }
+            String productId = purchase.getProducts().isEmpty() ? SKU_MONTHLY : purchase.getProducts().get(0);
+            sendToRevenueCat(purchase.getPurchaseToken(), productId, false);
             js("window.__purchaseSuccess&&window.__purchaseSuccess()");
         }
+    }
+
+    private String getUserId() {
+        SharedPreferences prefs = getSharedPreferences("hoo.rc", MODE_PRIVATE);
+        String id = prefs.getString("uid", null);
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+            prefs.edit().putString("uid", id).apply();
+        }
+        return id;
+    }
+
+    private void sendToRevenueCat(final String purchaseToken, final String productId, final boolean isRestore) {
+        if (RC_API_KEY.startsWith("YOUR_")) return;
+        final String userId = getUserId();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://api.revenuecat.com/v1/receipts");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestProperty("Authorization", "Bearer " + RC_API_KEY);
+                    conn.setRequestProperty("X-Platform", "android");
+                    conn.setDoOutput(true);
+                    conn.setConnectTimeout(10000);
+                    conn.setReadTimeout(10000);
+                    String body = "{\"app_user_id\":\"" + userId + "\",\"fetch_token\":\"" + purchaseToken + "\",\"product_id\":\"" + productId + "\",\"is_restore\":" + isRestore + "}";
+                    byte[] bytes = body.getBytes("UTF-8");
+                    OutputStream os = conn.getOutputStream();
+                    os.write(bytes);
+                    os.flush();
+                    os.close();
+                    conn.getResponseCode();
+                    conn.disconnect();
+                } catch (Exception e) { /* silent — RC is analytics only */ }
+            }
+        }).start();
     }
 
     private void restorePurchasesInternal() {
@@ -501,7 +546,12 @@ public class MainActivity extends Activity {
                 boolean active = false;
                 if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     for (Purchase p : purchases) {
-                        if (p.getPurchaseState() == Purchase.PurchaseState.PURCHASED) { active = true; break; }
+                        if (p.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                            active = true;
+                            String pid = p.getProducts().isEmpty() ? SKU_MONTHLY : p.getProducts().get(0);
+                            sendToRevenueCat(p.getPurchaseToken(), pid, true);
+                            break;
+                        }
                     }
                 }
                 final boolean isPremium = active;
