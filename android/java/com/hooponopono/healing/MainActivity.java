@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
     static final String NOTIF_PERM = "android.permission.POST_NOTIFICATIONS";
     static final String SKU_MONTHLY = "premium_monthly";
     static final String SKU_YEARLY = "premium_yearly";
-    static final String RC_API_KEY = "test_gyQHvgvAlLZVQXeBjjqiQkyaQGE";
+    static final String RC_API_KEY = "goog_vlQVUfcpFuYHiAhJkKtyEJaTAaV";
     private WebView web;
     private ValueCallback<Uri[]> filePick;
     private BillingClient billingClient;
